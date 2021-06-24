@@ -16,20 +16,58 @@ bot.onText(/\/start/, (msg) => {
     bot.sendMessage(
         msg.chat.id,
         `hello ${msg.chat.first_name}, welcome...\n
-        click /menu to main menu`
+        click  /predict to know about sudut`
     );   
 });
 
-bot.onText(/\/menu/, (msg) => { 
-    console.log(msg)
+
+
+state = 0;
+bot.onText(/\/predict/, (msg) => { 
     bot.sendMessage(
         msg.chat.id,
-        `this is your main menu`
+        `input nilai x|y|z example 4|3|3`
     );   
+    state = 1;
 });
 
+bot.on('message', (msg) => {
+    if(state == 1){
+        s = msg.text.split("|");
+        i = s[0]
+        v = s[1]
+        model.predict(
+            [
+                parseFloat(s[0]), // string to float
+                parseFloat(s[1])
+            ]
+        ).then((jres)=>{
+            x = parseFloat(jres[0])
+            y = parseFloat(jres[1])
+            z = parseFloat(jres[2])
+            
+            cls_model.classify([parseFloat(s[0]), parseFloat(s[1]), parseFloat(s[2]), x, y, z]). =>{
+                bot.sendMessage(
+                    msg.chat.id,
+                    `nilai x yang diprediksi adalah ${jres[0]} `
+                );   
+                bot.sendMessage(
+                    msg.chat.id,
+                    `nilai y yang diprediksi adalah ${jres[1]} `
+                );
+                bot.sendMessage(
+                    msg.chat.id,
+                    `nilai y yang diprediksi adalah ${jres[2]} `
+                );   
+            }) 
+        })
+    }else{
+        state = 0
+    }
+})
+
 // routers
-r.get('/prediction/:x/:y', function(req, res, next) {    
+r.get('/prediction/:i/:r', function(req, res, next) {    
     model.predict(
         [
             parseFloat(req.params.i), // string to float
@@ -40,4 +78,25 @@ r.get('/prediction/:x/:y', function(req, res, next) {
     })
 });
 
+// routers
+r.get('/classify/:x/:y', function(req, res, next) {
+      model.predict(
+        [
+                parseFloat(req.params.x), //string nofloat
+                parseFloat(req.params.y),
+        ]
+       ).then((jres)=>{
+           cls_model.classify(
+               [
+                parseFloat(req.params.x), //string nofloat
+                parseFloat(req.params.y),
+                parseFloat(jres[0]),
+                parseFloat(jres[1])
+               ]
+               ).then((jres_)=>{
+                res.json(jres_)
+           })
+      })
+});
+        
 module.exports = r;
