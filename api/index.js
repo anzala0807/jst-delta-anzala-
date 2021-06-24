@@ -6,7 +6,7 @@ const model = require('./sdk/model.js');
 
 // Bot Setting
 const TelegramBot = require('node-telegram-bot-api');
-const token = '1733547356:AAEOX7oG_z09vS34M-DUHOm5YCPsXYDXohg'
+const token = '1875119020:AAHGtM9gl6gdSqN7UOQwSFq207_CLw0Ic3o'
 const bot = new TelegramBot(token, {polling: true});
 
 
@@ -29,7 +29,7 @@ bot.onText(/\/menu/, (msg) => {
 });
 
 // routers
-r.get('/prediction/:i/:r', function(req, res, next) {    
+r.get('/prediction/:x/:y', function(req, res, next) {    
     model.predict(
         [
             parseFloat(req.params.i), // string to float
